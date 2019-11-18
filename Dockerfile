@@ -1,23 +1,11 @@
-FROM alpine:3.7
+FROM mongo:4-bionic
 
-RUN apk add --update \
-  bash \
-  mongodb-tools \
-  curl \
-  python \
-  py-pip \
-  py-cffi \
-  && pip install --upgrade pip \
-  && apk add --virtual build-deps \
-  gcc \
-  libffi-dev \
-  python-dev \
-  linux-headers \
-  musl-dev \
-  openssl-dev \
-  && pip install gsutil \
-  && apk del build-deps \
-  && rm -rf /var/cache/apk/*
+RUN apt update && apt install -y curl \
+ && echo "deb http://packages.cloud.google.com/apt cloud-sdk-xenial main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
+ && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -\
+ && apt-get update \
+ && apt-get install -y google-cloud-sdk
+
 
 ADD ./backup.sh /mongodb-gcs-backup/backup.sh
 WORKDIR /mongodb-gcs-backup
